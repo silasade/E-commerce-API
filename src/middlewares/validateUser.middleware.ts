@@ -17,13 +17,20 @@ const validateUser = async (
     if (headers.authorization && headers.authorization.startsWith("Bearer ")) {
       token = headers.authorization.split(" ")[1];
     } else {
-      res.status(403).json({
-        message: "You are not authorizeed to access this resource",
+      res.status(401).json({
+        message: "You are not authorized to access this resource",
         success: false,
       });
       return;
     }
     const decodedPayload = auth.verifyToken(token);
+    if (!decodedPayload) {
+      res.status(401).json({
+        message: "Invalid or expired token",
+        success: false,
+      });
+      return;
+    }
     const user = await userService.findUserById(decodedPayload.id);
     if (!user) {
       res.status(404).json({

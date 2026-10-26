@@ -20,10 +20,16 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
       return;
     }
     const user = await auth.register(body);
+    const userObj =
+      user && typeof (user as any).toObject === "function"
+        ? (user as any).toObject()
+        : { ...user };
+    delete userObj.password;
+
     res.status(201).json({
       success: true,
       message: "User created successfully",
-      data: user,
+      data: userObj,
     });
   } catch (error) {
     next(error);
@@ -51,11 +57,17 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       return;
     }
     const token = await auth.createToken(String(user._id), user.email);
+    const userObj =
+      user && typeof (user as any).toObject === "function"
+        ? (user as any).toObject()
+        : { ...user };
+    delete userObj.password;
+
     res.status(201).json({
       success: true,
       message: "User login successful",
       data: {
-        ...user,
+        ...userObj,
         token,
       },
     });
@@ -114,7 +126,7 @@ const resetPassword = async (
     if (!decodedUser) {
       res.status(404).json({
         success: false,
-        message: "User  does not exist",
+        message: "User does not exist",
       });
       return;
     }

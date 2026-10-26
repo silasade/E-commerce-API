@@ -27,13 +27,19 @@ class Auth {
     return token;
   };
 
-  public verifyToken = (token: string) => {
-    const decodePayload = jwt.verify(token, this.jwtSecret) as {
-      id: string;
-      email: string;
-    };
+  public verifyToken = (
+    token: string,
+  ): { id: string; email: string } | null => {
+    try {
+      const decodePayload = jwt.verify(token, this.jwtSecret) as {
+        id: string;
+        email: string;
+      };
 
-    return decodePayload;
+      return decodePayload;
+    } catch {
+      return null;
+    }
   };
 }
 
