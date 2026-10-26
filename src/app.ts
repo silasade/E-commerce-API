@@ -6,6 +6,8 @@ import helmet from "helmet";
 import { validateUser } from "./middlewares/validateUser.middleware";
 import authRoutes from "./routes/auth.route";
 import { setupSwagger } from "./config/swagger";
+import uploadRoutes from "./routes/upload.route";
+
 dotenv.config();
 
 const port = process.env.PORT;
@@ -48,6 +50,8 @@ const createApp = async () => {
 
   // routes below this will be authenticated
   app.use(validateUser);
+  // ...
+  app.use("/api/uploads", uploadRoutes);
 
   // Central error handler must be last
   app.use(errorHandler);

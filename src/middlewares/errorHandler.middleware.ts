@@ -20,6 +20,11 @@ export const errorHandler = (
   } else if (err.name === "TokenExpiredError") {
     statusCode = 401;
     message = "Token has expired";
+  } else if (
+    err.name === "MulterError" ||
+    err.message === "Only image files are allowed"
+  ) {
+    statusCode = 400;
   }
 
   console.error(`[Error] ${req.method} ${req.originalUrl}:`, err);

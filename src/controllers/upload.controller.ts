@@ -38,7 +38,7 @@ export const uploadImage = async (
     res.status(201).json({
       success: true,
       message: "Image uploaded successfully",
-      image: {
+      data: {
         url: result.secure_url,
         publicId: result.public_id,
       },
