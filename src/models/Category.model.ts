@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
-
+import slugify from "slugify";
 export interface ICategory extends Document {
   _id: mongoose.Types.ObjectId;
   name: string;
@@ -14,6 +14,8 @@ const categorySchema = new Schema<ICategory>(
       type: String,
       required: [true, "Name of category is required"],
       trim: true,
+      unique: true,
+      minlength: [3, "Category name must be at least 3 characters"],
     },
     description: {
       type: String,
@@ -29,6 +31,7 @@ const categorySchema = new Schema<ICategory>(
       trim: true,
       unique: true,
       required: [true, "Slug is required"],
+      lowercase: true,
     },
   },
   {
@@ -36,7 +39,13 @@ const categorySchema = new Schema<ICategory>(
   },
 );
 
-export const CategoryModel = mongoose.model<ICategory>(
-  "Category",
-  categorySchema,
-);
+categorySchema.pre("validate", function () {
+  if (this.name && (!this.slug || this.isModified("name"))) {
+    this.slug = slugify(this.name, {
+      lower: true,
+      strict: true,
+    });
+  }
+});
+
+export const Category = mongoose.model<ICategory>("Category", categorySchema);
