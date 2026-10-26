@@ -7,7 +7,7 @@ export interface IUser extends Document {
   lastName: string;
   password: string;
   email: string;
-  comparePassword(candidatePassword: string): Promise<Boolean>;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const userSchema = new Schema<IUser>(
@@ -32,6 +32,8 @@ const userSchema = new Schema<IUser>(
     email: {
       type: String,
       required: [true, "Email address is required"],
+      unique: true,
+      lowercase: true,
       trim: true,
     },
   },
@@ -49,7 +51,7 @@ userSchema.pre("save", async function () {
 
 userSchema.methods.comparePassword = async function (
   candidatePassword: string,
-): Promise<Boolean> {
+): Promise<boolean> {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 

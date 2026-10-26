@@ -309,7 +309,7 @@ describe("Authentication Routes & Validation", () => {
 
       expect(res.status).toBe(404);
       expect(res.body.success).toBe(false);
-      expect(res.body.message).toBe("User  does not exist");
+      expect(res.body.message).toBe("User does not exist");
     });
 
     it("should successfully reset password when token and new password are valid", async () => {
