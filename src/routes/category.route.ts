@@ -10,6 +10,7 @@ import {
   getCategoryBySlug,
   updateCategory,
 } from "../controllers/category.controller";
+import { authorize } from "../middlewares/authorize.middleware";
 
 const router = express.Router();
 
@@ -104,6 +105,7 @@ router.get("/", validateRequest(getCategorySchema), getCategories);
 router.post(
   "/",
   validateUser,
+  authorize("ADMIN"),
   validateRequest(createCategorySchema),
   createCategory,
 );
@@ -211,12 +213,14 @@ router.get("/:categoryId", validateRequest(categoryIdSchema), getCategoryById);
 router.patch(
   "/:categoryId",
   validateUser,
+  authorize("ADMIN"),
   validateRequest(updateCategorySchema),
   updateCategory,
 );
 router.delete(
   "/:categoryId",
   validateUser,
+  authorize("ADMIN"),
   validateRequest(categoryIdSchema),
   deleteCategory,
 );

@@ -38,7 +38,7 @@ describe("Upload Routes & Middleware", () => {
     vi.clearAllMocks();
   });
 
-  const mockAuthenticatedUser = () => {
+  const mockAuthenticatedUser = (role: "ADMIN" | "USER" = "ADMIN") => {
     vi.mocked(auth.verifyToken).mockReturnValue({
       id: "user123",
       email: "user@example.com",
@@ -48,6 +48,7 @@ describe("Upload Routes & Middleware", () => {
       email: "user@example.com",
       firstName: "Test",
       lastName: "User",
+      role,
     } as any);
   };
 
@@ -72,6 +73,24 @@ describe("Upload Routes & Middleware", () => {
       expect(res.status).toBe(401);
       expect(res.body.success).toBe(false);
       expect(res.body.message).toBe("Invalid or expired token");
+    });
+
+    it("should return 403 if authenticated user is not an ADMIN", async () => {
+      mockAuthenticatedUser("USER");
+
+      const res = await request(app)
+        .post("/api/uploads/image")
+        .set("Authorization", "Bearer user-token")
+        .attach("image", Buffer.from("mock image data"), {
+          filename: "product.png",
+          contentType: "image/png",
+        });
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toBe(
+        "You are not authorized to view this resource",
+      );
     });
 
     it("should return 400 when no file is uploaded", async () => {

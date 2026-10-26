@@ -41,7 +41,7 @@ describe("Category Routes & Operations", () => {
     vi.clearAllMocks();
   });
 
-  const mockAuthenticatedUser = () => {
+  const mockAuthenticatedUser = (role: "ADMIN" | "USER" = "ADMIN") => {
     vi.mocked(auth.verifyToken).mockReturnValue({
       id: "user123",
       email: "admin@example.com",
@@ -51,6 +51,7 @@ describe("Category Routes & Operations", () => {
       email: "admin@example.com",
       firstName: "Admin",
       lastName: "User",
+      role,
     } as any);
   };
 
@@ -170,6 +171,23 @@ describe("Category Routes & Operations", () => {
       expect(res.body.success).toBe(false);
     });
 
+    it("should reject request with 403 if user is not an ADMIN", async () => {
+      mockAuthenticatedUser("USER");
+
+      const res = await request(app)
+        .post("/api/categories")
+        .set("Authorization", "Bearer user-token")
+        .send({
+          name: "Gaming Gear",
+        });
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toBe(
+        "You are not authorized to view this resource",
+      );
+    });
+
     it("should fail validation if name is shorter than 3 characters", async () => {
       mockAuthenticatedUser();
 
@@ -220,6 +238,21 @@ describe("Category Routes & Operations", () => {
       expect(res.status).toBe(401);
     });
 
+    it("should reject update with 403 if user is not an ADMIN", async () => {
+      mockAuthenticatedUser("USER");
+
+      const res = await request(app)
+        .patch(`/api/categories/${validMongoId}`)
+        .set("Authorization", "Bearer user-token")
+        .send({ name: "Updated Name" });
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toBe(
+        "You are not authorized to view this resource",
+      );
+    });
+
     it("should return 404 if updating non-existent category", async () => {
       mockAuthenticatedUser();
       vi.mocked(categoryService.updateCategory).mockResolvedValue(null);
@@ -261,6 +294,20 @@ describe("Category Routes & Operations", () => {
       const res = await request(app).delete(`/api/categories/${validMongoId}`);
 
       expect(res.status).toBe(401);
+    });
+
+    it("should reject delete with 403 if user is not an ADMIN", async () => {
+      mockAuthenticatedUser("USER");
+
+      const res = await request(app)
+        .delete(`/api/categories/${validMongoId}`)
+        .set("Authorization", "Bearer user-token");
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toBe(
+        "You are not authorized to view this resource",
+      );
     });
 
     it("should return 404 if category to delete does not exist", async () => {

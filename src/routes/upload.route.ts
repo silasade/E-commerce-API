@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { uploadImage } from "../controllers/upload.controller";
 import upload from "../middlewares/upload.middleware";
+import { authorize } from "../middlewares/authorize.middleware";
 
 const router = Router();
 
@@ -54,6 +55,6 @@ const router = Router();
  *       401:
  *         description: Unauthorized (missing or invalid token)
  */
-router.post("/image", upload.single("image"), uploadImage);
+router.post("/image", upload.single("image"), authorize("ADMIN"), uploadImage);
 
 export default router;
