@@ -2,6 +2,7 @@ import { Category } from "../models/Category.model";
 import {
   CategoryIdSchemaType,
   CreateCategorySchemaType,
+  GetCategorySchemaType,
   UpdateCategorySchemaType,
 } from "../routes/category.route";
 import { toObjectId } from "../utils/common";
@@ -42,8 +43,19 @@ class CategoryService {
     return category;
   };
 
-  public getCategories = async () => {
-    const categories = await Category.find();
+  public getCategories = async (
+    search?: GetCategorySchemaType["query"]["search"],
+  ) => {
+    const filter: any = {};
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), "i");
+      filter.$or = [
+        { name: searchRegex },
+        { slug: searchRegex },
+        { description: searchRegex },
+      ];
+    }
+    const categories = await Category.find(filter);
     return categories;
   };
 

@@ -69,6 +69,22 @@ describe("Category Routes & Operations", () => {
       expect(res.body.success).toBe(true);
       expect(res.body.data).toEqual(mockCategories);
     });
+
+    it("should pass search query parameter to categoryService.getCategories", async () => {
+      const mockCategories = [
+        { _id: validMongoId, name: "Smartphones", slug: "smartphones" },
+      ];
+      vi.mocked(categoryService.getCategories).mockResolvedValue(
+        mockCategories as any,
+      );
+
+      const res = await request(app).get("/api/categories?search=phone");
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(categoryService.getCategories).toHaveBeenCalledWith("phone");
+      expect(res.body.data).toEqual(mockCategories);
+    });
   });
 
   describe("GET /api/categories/:categoryId (Public)", () => {

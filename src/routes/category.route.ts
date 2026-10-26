@@ -23,9 +23,7 @@ const createCategorySchema = z.object({
 
 const categoryIdSchema = z.object({
   params: z.object({
-    categoryId: z
-      .string()
-      .regex(/^[0-9a-fA-F]{24}$/, "Invalid Category ID"),
+    categoryId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Category ID"),
   }),
 });
 
@@ -42,9 +40,13 @@ const updateCategorySchema = z.object({
     isActive: z.boolean().optional(),
   }),
   params: z.object({
-    categoryId: z
-      .string()
-      .regex(/^[0-9a-fA-F]{24}$/, "Invalid Category ID"),
+    categoryId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Category ID"),
+  }),
+});
+
+const getCategorySchema = z.object({
+  query: z.object({
+    search: z.string().optional(),
   }),
 });
 
@@ -52,6 +54,7 @@ export type CreateCategorySchemaType = z.infer<typeof createCategorySchema>;
 export type CategoryIdSchemaType = z.infer<typeof categoryIdSchema>;
 export type CategorySlugSchemaType = z.infer<typeof categorySlugSchema>;
 export type UpdateCategorySchemaType = z.infer<typeof updateCategorySchema>;
+export type GetCategorySchemaType = z.infer<typeof getCategorySchema>;
 
 /**
  * @openapi
@@ -97,7 +100,7 @@ export type UpdateCategorySchemaType = z.infer<typeof updateCategorySchema>;
  *       409:
  *         description: Category name already exists
  */
-router.get("/", getCategories);
+router.get("/", validateRequest(getCategorySchema), getCategories);
 router.post(
   "/",
   validateUser,

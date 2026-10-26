@@ -4,6 +4,7 @@ import {
   CategoryIdSchemaType,
   CategorySlugSchemaType,
   CreateCategorySchemaType,
+  GetCategorySchemaType,
   UpdateCategorySchemaType,
 } from "../routes/category.route";
 
@@ -40,7 +41,9 @@ const getCategories = async (
   next: NextFunction,
 ) => {
   try {
-    const categories = await categoryService.getCategories();
+    const { query } = res.locals.validated as GetCategorySchemaType;
+    const search = query?.search;
+    const categories = await categoryService.getCategories(search);
 
     res.status(200).json({
       success: true,
