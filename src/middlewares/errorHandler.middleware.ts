@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 interface CustomError extends Error {
   statusCode?: number;
+  http_code?: number;
   code?: number;
 }
 
@@ -11,7 +12,7 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  let statusCode = err.statusCode || 500;
+  let statusCode = err.statusCode || err.http_code || 500;
   let message = err.message || "Internal server error";
 
   if (err.name === "JsonWebTokenError") {
