@@ -26,6 +26,11 @@ export const errorHandler = (
     err.message === "Only image files are allowed"
   ) {
     statusCode = 400;
+  } else if (err.code === 11000) {
+    statusCode = 409;
+    const keyValue = (err as any).keyValue;
+    const field = keyValue ? Object.keys(keyValue)[0] : "Field";
+    message = `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
   }
 
   console.error(`[Error] ${req.method} ${req.originalUrl}:`, err);

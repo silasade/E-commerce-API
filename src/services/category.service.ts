@@ -6,7 +6,7 @@ import {
 } from "../routes/category.route";
 import { toObjectId } from "../utils/common";
 
-class CategorySchema {
+class CategoryService {
   public getCategoryById = async (
     id: CategoryIdSchemaType["params"]["categoryId"],
   ) => {
@@ -41,6 +41,16 @@ class CategorySchema {
     await category.save(); // Triggers pre("validate") hook, recomputing slug!
     return category;
   };
+
+  public getCategories = async () => {
+    const categories = await Category.find();
+    return categories;
+  };
+
+  public getCategoryBySlug = async (slug: string) => {
+    const category = await Category.findOne({ slug: slug.toLowerCase() });
+    return category;
+  };
 }
 
-export const categorySchema = new CategorySchema();
+export const categoryService = new CategoryService();

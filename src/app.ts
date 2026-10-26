@@ -7,7 +7,7 @@ import { validateUser } from "./middlewares/validateUser.middleware";
 import authRoutes from "./routes/auth.route";
 import { setupSwagger } from "./config/swagger";
 import uploadRoutes from "./routes/upload.route";
-
+import categoryRoutes from "./routes/category.route";
 dotenv.config();
 
 const port = process.env.PORT;
@@ -47,6 +47,7 @@ const createApp = async () => {
     }
   });
   app.use("/api/auth", authRoutes);
+  app.use("/api/categories", categoryRoutes);
 
   // routes below this will be authenticated
   app.use(validateUser);
