@@ -119,6 +119,13 @@ const updateProduct = async (
   try {
     const { body, params } = res.locals.validated as UpdateProductSchemaType;
     const product = await productService.updateProduct(params.productId, body);
+    if (!product) {
+      res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+      return;
+    }
     res.status(200).json({
       message: "Product updated successfully",
       success: true,
