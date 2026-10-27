@@ -1,0 +1,75 @@
+import z from "zod";
+import express from "express";
+
+const router = express.Router();
+
+const productImageSchema = z.object({
+  url: z.string().min(1, "Image URL is required"),
+  publicId: z.string().optional(),
+});
+
+const createProductSchema = z.object({
+  body: z.object({
+    name: z.string().min(3, "Name must be at least 3 characters"),
+    description: z.string().min(1, "Product description is required"),
+    price: z.number().min(0.01, "Price must be at least 0.01"),
+    stock: z
+      .number()
+      .int("Stock must be an integer")
+      .min(0, "Stock cannot be negative")
+      .default(0),
+    category: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Category ID"),
+    images: z.array(productImageSchema).default([]),
+    isActive: z.boolean().default(true),
+  }),
+});
+
+const productIdSchema = z.object({
+  params: z.object({
+    productId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Product ID"),
+  }),
+});
+
+const productSlugSchema = z.object({
+  params: z.object({
+    slug: z.string().min(1, "Slug is required"),
+  }),
+});
+
+const updateProductSchema = z.object({
+  body: z.object({
+    name: z.string().min(3, "Name must be at least 3 characters").optional(),
+    description: z.string().min(1).optional(),
+    price: z.number().min(0.01, "Price must be at least 0.01").optional(),
+    stock: z
+      .number()
+      .int("Stock must be an integer")
+      .min(0, "Stock cannot be negative")
+      .optional(),
+    category: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Category ID").optional(),
+    images: z.array(productImageSchema).optional(),
+    isActive: z.boolean().optional(),
+  }),
+  params: z.object({
+    productId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Product ID"),
+  }),
+});
+
+const getProductSchema = z.object({
+  query: z.object({
+    search: z.string().optional(),
+    category: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Category ID").optional(),
+    minPrice: z.coerce.number().min(0).optional(),
+    maxPrice: z.coerce.number().min(0).optional(),
+    page: z.coerce.number().int().min(1).optional(),
+    limit: z.coerce.number().int().min(1).optional(),
+  }),
+});
+
+export type CreateProductSchemaType = z.infer<typeof createProductSchema>;
+export type ProductIdSchemaType = z.infer<typeof productIdSchema>;
+export type ProductSlugSchemaType = z.infer<typeof productSlugSchema>;
+export type UpdateProductSchemaType = z.infer<typeof updateProductSchema>;
+export type GetProductSchemaType = z.infer<typeof getProductSchema>;
+
+export default router;
