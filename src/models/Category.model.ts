@@ -39,6 +39,8 @@ const categorySchema = new Schema<ICategory>(
   },
 );
 
+categorySchema.index({ name: "text", description: "text", slug: "text" });
+
 categorySchema.pre("validate", function () {
   if (this.name && (!this.slug || this.isModified("name"))) {
     this.slug = slugify(this.name, {

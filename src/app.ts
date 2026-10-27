@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth.route";
 import { setupSwagger } from "./config/swagger";
 import uploadRoutes from "./routes/upload.route";
 import categoryRoutes from "./routes/category.route";
+import productRoutes from "./routes/product.route";
 dotenv.config();
 
 const port = process.env.PORT;
@@ -48,6 +49,7 @@ const createApp = async () => {
   });
   app.use("/api/auth", authRoutes);
   app.use("/api/categories", categoryRoutes);
+  app.use("/api/products", productRoutes);
 
   // routes below this will be authenticated
   app.use(validateUser);
